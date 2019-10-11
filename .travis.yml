@@ -1,0 +1,42 @@
+language: android
+
+jdk:
+  - oraclejdk8
+
+notifications:
+  email: false
+
+sudo: false
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-26.0.3
+    - android-26
+    - extra-android-m2repository
+    - extra-android-support
+
+  licenses:
+      - 'android-sdk-license-.+'
+      - '.+'
+
+before_install:
+  - chmod +x gradlew
+
+  # workaround for "http://stackoverflow.com/questions/37615379/travis-ci-build-doesnt-work-with-android-constraint-layout"
+  - mkdir "$ANDROID_HOME/licenses" || true
+  - echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e" > "$ANDROID_HOME/licenses/android-sdk-license"
+  - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+
+script:
+  - ./gradlew assembleRelease
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
