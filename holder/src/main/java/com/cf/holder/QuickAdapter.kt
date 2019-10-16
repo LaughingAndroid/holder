@@ -1,30 +1,37 @@
 package com.cf.holder
 
 import android.app.Activity
+import android.app.Application
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.cf.annotation.Holder
-import com.lau.holder.R
 import com.lau.holder.FooterHolderBuilder
+import com.lau.holder.R
 
 open class QuickAdapter : RecyclerView.Adapter<BaseHolder<*>> {
-    private var mActivity: Activity? = null
-    private var mFragment: Fragment? = null
-    private val mFooterCount: Int = 1
+    private var adapterContext: AdapterContext
+        set(value) {
+            field = value
+            field.setAdapter(this)
+        }
+    private var mFooterCount: Int = 1
     private var mHolderBuilderMap: HashMap<Int, IHolderBuilder<*>> = hashMapOf()
     private var mData: MutableList<*> = mutableListOf<Any>()
     val mFooterData: FooterHolder.Data = FooterHolder.Data()
 
-    constructor(a: Activity) {
-        mActivity = a
+    constructor(a: AdapterContext) {
+        adapterContext = a
     }
 
-    constructor(f: Fragment) {
-        mFragment = f
+    constructor(activity: Activity) {
+        adapterContext = activity.toAdapterContext()
+    }
+
+    constructor(fragment: Fragment) {
+        adapterContext = fragment.toAdapterContext()
     }
 
     init {
@@ -77,7 +84,7 @@ open class QuickAdapter : RecyclerView.Adapter<BaseHolder<*>> {
             var holderClass = mHolderBuilderMap[viewType]
             holderClass?.let {
                 return holderClass.createVH(parent).also { holder ->
-                    holder.mPageContext = mActivity ?: mFragment
+                    holder.adapterContext = adapterContext
                 }
             }
         }
@@ -94,7 +101,7 @@ open class QuickAdapter : RecyclerView.Adapter<BaseHolder<*>> {
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (position == itemCount - 1) {
+        if (mFooterCount == 1 && position == itemCount - 1) {
             return mFooterData.javaClass.hashCode()
         }
         val item = getItem(position)
@@ -108,6 +115,11 @@ open class QuickAdapter : RecyclerView.Adapter<BaseHolder<*>> {
 
     fun getItem(position: Int): Any? {
         return if (position >= 0 && position < mData.size) mData[position] else mFooterData
+    }
+
+    fun setFooterEnable(enable: Boolean) {
+        mFooterCount = if (enable) 1 else 0
+        notifyDataSetChanged()
     }
 }
 
@@ -131,11 +143,7 @@ open class FooterHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: 
         if (!hasObserve) {
             hasObserve = true
             mLifecycle?.let {
-                data.liveData.observe(object : LifecycleOwner {
-                    override fun getLifecycle(): Lifecycle {
-                        return it
-                    }
-                }, androidx.lifecycle.Observer {
+                data.liveData.observe({ it }, {
                     refresh()
                 })
             }
@@ -164,6 +172,73 @@ open class FooterHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: 
                 liveData.value = this
             }
         val liveData: MutableLiveData<Data> = MutableLiveData()
+    }
+}
+
+interface AdapterContext {
+    fun activity(): Activity?
+    /**
+     * 使用adapter的宿主
+     * activity, fragment等
+     */
+    fun target(): Any
+
+    fun <T> as2(): T?
+
+    fun adapter(): QuickAdapter
+
+    fun setAdapter(adapter: QuickAdapter)
+}
+
+abstract class BaseAdapterContext : AdapterContext {
+    private lateinit var _adapter: QuickAdapter
+
+    override fun <T> as2(): T? {
+        return target() as? T
+    }
+
+    override fun adapter(): QuickAdapter {
+        return this._adapter
+    }
+
+    override fun setAdapter(adapter: QuickAdapter) {
+        this._adapter = adapter
+    }
+}
+
+fun Activity.toAdapterContext(): AdapterContext {
+    return object : BaseAdapterContext() {
+        override fun target(): Any {
+            return this@toAdapterContext
+        }
+
+        override fun activity(): Activity {
+            return this@toAdapterContext
+        }
+    }
+}
+
+fun Fragment.toAdapterContext(): BaseAdapterContext {
+    return object : BaseAdapterContext() {
+        override fun target(): Any {
+            return this@toAdapterContext
+        }
+
+        override fun activity(): Activity? {
+            return this@toAdapterContext.activity
+        }
+    }
+}
+
+fun Application.toAdapterContext(): BaseAdapterContext {
+    return object : BaseAdapterContext() {
+        override fun target(): Any {
+            return this@toAdapterContext
+        }
+
+        override fun activity(): Activity? {
+            return null
+        }
     }
 }
 

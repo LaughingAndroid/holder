@@ -7,9 +7,5 @@
 #./gradlew :compiler:bintrayUpload
 
 # router
-module=$1
-
-if [[ x${module} = x ]]; then
-  module=router
-fi
-./gradlew  bintrayUpload -PbintrayUser=mchwind -PbintrayKey=e10434f24d57625f6566ab14a4fbe8f01fad9cdc -PdryRun=false -x javadoc
+module=holder-complier
+./gradlew  bintrayUpload -PbintrayUser=mchwind -PbintrayKey=$1 -PdryRun=false -x javadoc

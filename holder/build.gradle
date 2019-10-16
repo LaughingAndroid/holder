@@ -30,18 +30,22 @@ android {
         }
     }
 
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api deps.support.app_compat
-    api deps.support.recyclerview
+    implementation deps.support.appcompat
+    implementation deps.support.recyclerview
     implementation deps.lifecycle.runtime
     implementation deps.lifecycle.extensions
     implementation deps.lifecycle.java8
-
-    api project(':holder-annotation')
     kapt project(':holder-complier')
 }
 
-//apply from: 'publish.gradle'
+apply from: 'publish.gradle'

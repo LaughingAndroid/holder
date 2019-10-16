@@ -1,6 +1,5 @@
 package com.cf.holder.list
 
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -14,40 +13,98 @@ import com.cf.holder.QuickAdapter
  * @CreateDate: 2019/4/17 12:42
  * @Version: 1.1.0
  */
-class ListManager<VM : LoadData>(private var contextConfig: ListAction<VM>) {
-    lateinit var adapter: QuickAdapter
+interface ListManager {
+    fun onRefresh()
+    fun loadMore()
+    fun setRefreshEnable(enable: Boolean)
+    fun setLoadMoreEnable(enable: Boolean)
+    fun setRefreshListener(listener: PullRefreshListener?)
+    fun getAdapter(): QuickAdapter
+}
+
+open class BaseListManager<Loader : DataLoader>(var contextConfig: ListConfig<Loader>) : ListManager {
     var enableRefresh = true
     var enableLoadMore = true
+    lateinit var _adapter: QuickAdapter
+    var pullRefreshListener: PullRefreshListener? = null
+
+    init {
+        contextConfig.getRecyclerView()?.let { recycleView ->
+            _adapter = contextConfig.createAdapter()
+            contextConfig.createLayoutManager()?.apply {
+                recycleView.layoutManager = this
+            }
+            recycleView.adapter = _adapter
+            contextConfig.bindHolder(_adapter)
+        }
+
+        onRefresh()
+    }
+
+    override fun setRefreshEnable(enable: Boolean) {
+        enableRefresh = enable
+    }
+
+    override fun setLoadMoreEnable(enable: Boolean) {
+        enableLoadMore = enable
+    }
+
+    override fun setRefreshListener(listener: PullRefreshListener?) {
+        this.pullRefreshListener = listener
+        this.pullRefreshListener?.setOnRefresh { onRefresh() }
+    }
+
+    override fun onRefresh() {
+        contextConfig.getListDataLoader().load(true, {
+            onSuccess(it)
+        }, {
+            _adapter.mFooterData.isLoading = false
+        })
+    }
+
+
+    override fun loadMore() {
+        _adapter.mFooterData.isLoading = true
+        contextConfig.getListDataLoader().load(false, {
+            onSuccess(it)
+        }, {
+            onFailed(it)
+        })
+    }
+
+    open fun onSuccess(result: PageData) {
+        pullRefreshListener?.complete()
+        result.apply {
+            if (page == ListDataImpl.START) {
+                _adapter.setData(list)
+            } else {
+                _adapter.addData(list)
+            }
+        }
+    }
+
+    open fun onFailed(exception: Exception) {
+        pullRefreshListener?.complete()
+        _adapter.mFooterData.isLoading = false
+    }
+
+    override fun getAdapter(): QuickAdapter {
+        return _adapter
+    }
+
+}
+
+class AutoLoadListManager<VM : DataLoader>(config: ListConfig<VM>) : BaseListManager<VM>(config) {
     private var canLoadMoreFromData = true
 
     init {
-        contextConfig.getRecycleView()?.let { recycleView ->
-            adapter = contextConfig.createAdapter()
-            contextConfig.createLayoutManager()?.apply {
-                recycleView.layoutManager = this
-                addLoadMoreListener(recycleView)
-            }
-            recycleView.adapter = adapter
-            contextConfig.bindHolder(adapter)
-            addDataListener()
-        }
-
-    }
-
-    private fun addDataListener() {
-        contextConfig.getListVM().onListSuccess {
-            onSuccess(it)
-        }
+        config.getRecyclerView()?.let { addLoadMoreListener(it) }
     }
 
     private fun addLoadMoreListener(recycleView: RecyclerView) {
-        contextConfig.getListVM().onListError {
-            adapter.mFooterData.isLoading = false
-        }
-
         val scrollListener = object : LoadMoreListener() {
             override fun onLoadMore() {
-                if (enableLoadMore && canLoadMoreFromData && !adapter.mFooterData.isLoading) {
+                if (enableLoadMore && canLoadMoreFromData && !_adapter.mFooterData.isLoading) {
                     loadMore()
                 }
             }
@@ -55,27 +112,10 @@ class ListManager<VM : LoadData>(private var contextConfig: ListAction<VM>) {
         recycleView.addOnScrollListener(scrollListener)
     }
 
-
-    fun loadData() {
-        contextConfig.getListVM().load()
-    }
-
-    private fun onSuccess(result: ListResult) {
-        result.apply {
-            if (page == ListDataManager.START) {
-                adapter.setData(list)
-            } else {
-                adapter.addData(list)
-            }
-            canLoadMoreFromData = result.list?.isEmpty() != true
-
-            checkFullScreenAndLoadMore(contextConfig.getRecycleView())
-        }
-    }
-
-    private fun loadMore() {
-        adapter.mFooterData.isLoading = true
-        contextConfig.getListVM().load()
+    override fun onSuccess(result: PageData) {
+        super.onSuccess(result)
+        canLoadMoreFromData = result.list?.isEmpty() != true
+        checkFullScreenAndLoadMore(contextConfig.getRecyclerView())
     }
 
     private fun checkFullScreenAndLoadMore(recyclerView: RecyclerView?) {
@@ -115,19 +155,50 @@ class ListManager<VM : LoadData>(private var contextConfig: ListAction<VM>) {
     }
 }
 
-
-interface ListAction<VM : LoadData> : LifecycleOwner {
+/**
+ * 生成一个列表页的基础配置
+ */
+interface ListConfig<DL : DataLoader> {
+    /**
+     * 把holder和adapter关联
+     */
     fun bindHolder(adapter: QuickAdapter)
+
     fun createLayoutManager(): LinearLayoutManager?
-    fun getRecycleView(): RecyclerView?
+    fun getRecyclerView(): RecyclerView?
     fun createAdapter(): QuickAdapter
-    fun getListVM(): VM
+    /**
+     * 数据加载器
+     */
+    fun getListDataLoader(): DL
 }
 
-interface LoadData {
-    fun load()
-    fun onListSuccess(result: (ListResult) -> Unit)
-    fun onListError(exception: (Exception) -> Unit)
+/**
+ * 数据加载器
+ */
+interface DataLoader {
+    fun load(refresh: Boolean = false, result: (PageData) -> Unit, exception: (Exception) -> Unit)
 }
 
-data class ListResult(var page: Int = ListDataManager.START, var list: List<*>?)
+/**
+ * 基于page的数据加载器
+ */
+abstract class BaseDataLoader : DataLoader {
+    val dataManager = ListDataImpl<Any>()
+    override fun load(refresh: Boolean, result: (PageData) -> Unit, exception: (Exception) -> Unit) {
+        if (refresh) {
+            dataManager.resetPage()
+        }
+        loadData({
+            val data = PageData(dataManager.page, it)
+            result(data)
+            dataManager.putCache(data)
+            dataManager.pageAdd()
+        }, exception)
+    }
+
+    abstract fun loadData(result: (List<*>) -> Unit, exception: (Exception) -> Unit)
+}
+
+
+data class PageData(var page: Int = ListDataImpl.START, var list: List<*>?)

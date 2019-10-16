@@ -5,10 +5,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.cf.extensions.getTypeClass
 import com.cf.holder.QuickAdapter
+import com.lau.holder.R
 
-abstract class ListFragment<VM : LoadData> : Fragment(), ListAction<VM> {
-    lateinit var listConfig: ListManager<VM>
+abstract class ListFragment<DL : DataLoader> : Fragment(), ListConfig<DL> {
+    lateinit var listManager: ListManager
+    var rootView: View? = null
+    private var dataLoader: DL? = null
+
+    fun isListManagerInit(): Boolean = ::listManager.isInitialized
 
     override fun createLayoutManager(): LinearLayoutManager? {
         return LinearLayoutManager(this.context)
@@ -20,19 +27,33 @@ abstract class ListFragment<VM : LoadData> : Fragment(), ListAction<VM> {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        listConfig = ListManager(this)
-        listConfig.loadData()
+        rootView = view
+        listManager = createListConfig()
+    }
+
+    open fun createListConfig(): ListManager = AutoLoadListManager(this)
+
+    override fun getRecyclerView(): RecyclerView? {
+        return rootView?.findViewById(R.id.recyclerView)
+    }
+
+
+    override fun getListDataLoader(): DL {
+        return dataLoader
+                ?: (javaClass.getTypeClass(DataLoader::class.java)?.newInstance() as DL).apply {
+                    dataLoader = this
+                }
     }
 
     open fun setLoadMoreEnable(enable: Boolean) {
-        if (::listConfig.isInitialized) {
-            listConfig.enableLoadMore = enable
+        if (::listManager.isInitialized) {
+            listManager.setLoadMoreEnable(enable)
         }
     }
 
     open fun setRefreshEnable(enable: Boolean) {
-        if (::listConfig.isInitialized) {
-            listConfig.enableRefresh = enable
+        if (::listManager.isInitialized) {
+            listManager.setRefreshEnable(enable)
         }
     }
 }

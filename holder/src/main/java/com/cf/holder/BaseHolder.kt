@@ -9,14 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.IdRes
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import com.cf.extensions.getTypeClass
+import com.cf.holder.HolderManager.application
+import com.cf.holder.divider.ItemSize
 import com.lau.holder.BuildConfig
 import com.lau.holder.R
-import java.io.Serializable
 import java.lang.reflect.ParameterizedType
 
 @Suppress("LeakingThis")
@@ -75,13 +76,16 @@ abstract class BaseHolder<T> : RecyclerView.ViewHolder, DefaultLifecycleObserver
         itemView.setTag(R.id.holder, this)
     }
 
-    var mPageContext: Any? = null
+    var adapterContext: AdapterContext? = null
         set(value) {
             field = value
-            if (value is LifecycleOwner) {
-                this.mLifecycle = value.lifecycle
+            field?.apply {
+                val owner: LifecycleOwner? = (target() as? LifecycleOwner)
+                        ?: activity() as? LifecycleOwner
+                mLifecycle = owner?.lifecycle
+                onContextSet()
             }
-            onContextSet()
+
         }
     var mAdapterCount: Int = 0
     private var views: SparseArray<View>? = null
@@ -96,12 +100,7 @@ abstract class BaseHolder<T> : RecyclerView.ViewHolder, DefaultLifecycleObserver
     }
 
     fun getContext(): Context {
-        var context: Context? = if (mPageContext is Context) {
-            mPageContext as Context
-        } else {
-            ((mPageContext as? Fragment)?.activity)
-        }
-
+        var context: Context? = adapterContext?.activity()
         // check
         if (context == null) {
             log("context == null")
@@ -156,25 +155,13 @@ abstract class BaseHolder<T> : RecyclerView.ViewHolder, DefaultLifecycleObserver
     }
 }
 
-interface ItemSize : ItemLeftMargin {
-    fun itemSize(): Int
-}
-
-interface ItemLeftMargin : ItemRightMargin {
-    fun marginLeft(): Int
-}
-
-interface ItemRightMargin : Serializable {
-    fun marginRight(): Int
-}
 
 fun IHolderBuilder<*>.getItemTypeFromDataClass(): Int {
     return try {
         val builderType = javaClass.genericInterfaces[0] as ParameterizedType
         val holderClass = (builderType.actualTypeArguments[0] as Class<*>)
-        val holderTypeArray = (holderClass.genericSuperclass as ParameterizedType).actualTypeArguments
-        val holderDataClass = holderTypeArray[0]
-        holderDataClass.hashCode()
+        val holderData = holderClass.getTypeClass(Any::class.java)
+        holderData.hashCode()
     } catch (e: Exception) {
         e.printStackTrace()
         0

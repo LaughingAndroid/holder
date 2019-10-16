@@ -6,12 +6,14 @@
 #./gradlew :compiler:clean :compiler:pBPTML
 #./gradlew :compiler:bintrayUpload
 
-# router
-module=$1
 
-if [[ x${module} = x ]]; then
-  module=router
-fi
+cp libs/holder/complier/publish.gradle temp
+rm libs/holder/complier/publish.gradle
+cp empty.gradle libs/holder/complier/publish.gradle
+
+module=holder
 ./gradlew :${module}:aR
-./gradlew  bintrayUpload -PbintrayUser=mchwind -PbintrayKey=e10434f24d57625f6566ab14a4fbe8f01fad9cdc -PdryRun=false -x javadocRelease
-#-x releaseAndroidJavadocs
+./gradlew  bintrayUpload -PbintrayUser=mchwind -PbintrayKey=$1 -PdryRun=false -x javadocRelease
+
+cp temp libs/holder/complier/publish.gradle
+rm temp

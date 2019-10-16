@@ -11,7 +11,7 @@ import java.util.List;
  *
  *
  */
-public interface IListData<R>  {
+public interface ListData<R>  {
 
     void clearCache();
 
@@ -73,25 +73,25 @@ public interface IListData<R>  {
      */
     int LIMIT = 10;
 
-    IListData<R> setPage(int page);
+    ListData<R> setPage(int page);
 
-    IListData<R> setPage(Object requestTag, int page);
+    ListData<R> setPage(Object requestTag, int page);
 
     int getPage();
 
     int getPage(Object requestTag);
 
-    IListData<R> setLastPage(int lastPage);
+    ListData<R> setLastPage(int lastPage);
 
-    IListData<R> setLastPage(Object requestTag, int lastPage);
+    ListData<R> setLastPage(Object requestTag, int lastPage);
 
     int getLastPage();
 
     int getLastPage(Object requestTag);
 
-    IListData<R> putCache(Object value);
+    ListData<R> putCache(Object value);
 
-    IListData<R> putCache(Object tag, int page, Object value);
+    ListData<R> putCache(Object tag, int page, Object value);
 
     <T> T getCache();
 
@@ -112,26 +112,26 @@ public interface IListData<R>  {
 
     Object getTag();
 
-    IListData<R> setTag(Object tag);
+    ListData<R> setTag(Object tag);
 
     boolean isFirst();
 
     boolean isFirst(Object requestTag);
 
-    IListData<R> resetPage();
+    ListData<R> resetPage();
 
-    IListData<R> resetPage(Object requestTag);
+    ListData<R> resetPage(Object requestTag);
 
-    IListData<R> recordLastPage();
+    ListData<R> recordLastPage();
 
-    IListData<R> recordLastPage(Object requestTag);
+    ListData<R> recordLastPage(Object requestTag);
 
     /**
      * page++
      *
      * @return
      */
-    IListData<R> pageAdd();
+    ListData<R> pageAdd();
 
     /**
      * page ++
@@ -139,7 +139,7 @@ public interface IListData<R>  {
      * @param requestTag
      * @return
      */
-    IListData<R> pageAdd(Object requestTag);
+    ListData<R> pageAdd(Object requestTag);
 
     /**
      * 重新回复上一次的page

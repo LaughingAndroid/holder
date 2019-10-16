@@ -15,7 +15,7 @@ import java.util.TreeMap;
  * @since 16/10/26
  * 管理不同请求(tag区分,如new、hot)的page和result
  */
-public class ListDataManager<R> implements IListData<R>, Serializable {
+public class ListDataImpl<R> implements ListData<R>, Serializable {
     private static final Object DEFAULT_TAG = "default_request_tag";
 
     @Override
@@ -51,20 +51,20 @@ public class ListDataManager<R> implements IListData<R>, Serializable {
 
     private Object mTag = DEFAULT_TAG;
 
-    public ListDataManager() {
+    public ListDataImpl() {
         setTag(mTag);
         setPage(getTag(), START);
     }
 
 
     @Override
-    public ListDataManager<R> setPage(int page) {
+    public ListDataImpl<R> setPage(int page) {
         mPage.put(getTag(), page);
         return this;
     }
 
     @Override
-    public ListDataManager<R> setPage(Object requestTag, int page) {
+    public ListDataImpl<R> setPage(Object requestTag, int page) {
         mPage.put(requestTag, page);
         return this;
     }
@@ -84,13 +84,13 @@ public class ListDataManager<R> implements IListData<R>, Serializable {
     }
 
     @Override
-    public ListDataManager<R> setLastPage(int lastPage) {
+    public ListDataImpl<R> setLastPage(int lastPage) {
         mLastPage.put(getTag(), lastPage);
         return this;
     }
 
     @Override
-    public ListDataManager<R> setLastPage(Object requestTag, int lastPage) {
+    public ListDataImpl<R> setLastPage(Object requestTag, int lastPage) {
         mLastPage.put(requestTag, lastPage);
         return this;
     }
@@ -104,13 +104,13 @@ public class ListDataManager<R> implements IListData<R>, Serializable {
     }
 
     @Override
-    public ListDataManager<R> putCache(Object value) {
+    public ListDataImpl<R> putCache(Object value) {
         putCache(getTag(), getPage(), value);
         return this;
     }
 
     @Override
-    public ListDataManager<R> putCache(Object tag, int page, Object value) {
+    public ListDataImpl<R> putCache(Object tag, int page, Object value) {
         TreeMap<Integer, Result<Object>> tagMap = mDataCache.get(tag);
         if (null == tagMap) {
             tagMap = new TreeMap<>();
@@ -180,7 +180,7 @@ public class ListDataManager<R> implements IListData<R>, Serializable {
     }
 
     @Override
-    public ListDataManager<R> setTag(Object tag) {
+    public ListDataImpl<R> setTag(Object tag) {
         if (null != tag) {
             mTag = tag;
             if (!mTagList.containsKey(tag)) {
@@ -201,7 +201,7 @@ public class ListDataManager<R> implements IListData<R>, Serializable {
     }
 
     @Override
-    public ListDataManager<R> resetPage() {
+    public ListDataImpl<R> resetPage() {
         setPage(START);
         setLastPage(START);
         mDataCache.remove(getTag());
@@ -209,7 +209,7 @@ public class ListDataManager<R> implements IListData<R>, Serializable {
     }
 
     @Override
-    public ListDataManager<R> resetPage(Object requestTag) {
+    public ListDataImpl<R> resetPage(Object requestTag) {
         setPage(requestTag, START);
         setLastPage(requestTag, START);
         mDataCache.remove(requestTag);
@@ -217,13 +217,13 @@ public class ListDataManager<R> implements IListData<R>, Serializable {
     }
 
     @Override
-    public ListDataManager<R> recordLastPage() {
+    public ListDataImpl<R> recordLastPage() {
         setLastPage(getPage());
         return this;
     }
 
     @Override
-    public ListDataManager<R> recordLastPage(Object requestTag) {
+    public ListDataImpl<R> recordLastPage(Object requestTag) {
         setLastPage(requestTag, getPage());
         return this;
     }
@@ -234,7 +234,7 @@ public class ListDataManager<R> implements IListData<R>, Serializable {
      * @return
      */
     @Override
-    public ListDataManager<R> pageAdd() {
+    public ListDataImpl<R> pageAdd() {
         setPage(getPage() + 1);
         return this;
     }
@@ -246,7 +246,7 @@ public class ListDataManager<R> implements IListData<R>, Serializable {
      * @return
      */
     @Override
-    public ListDataManager<R> pageAdd(Object requestTag) {
+    public ListDataImpl<R> pageAdd(Object requestTag) {
         setPage(requestTag, getPage() + 1);
         return this;
     }

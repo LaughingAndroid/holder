@@ -1,9 +1,7 @@
 // core
-include ':holder',
+include ':holder', ':sample',
         ':holder-annotation',
         ':holder-complier'
 // demo
-include ':app'
-
 project(':holder-annotation').projectDir = new File("libs/holder/annotation")
 project(':holder-complier').projectDir = new File("libs/holder/complier")
