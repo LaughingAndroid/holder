@@ -29,16 +29,20 @@ open class BaseListManager<Loader : DataLoader>(var contextConfig: ListConfig<Lo
     var pullRefreshListener: PullRefreshListener? = null
 
     init {
-        contextConfig.getRecyclerView()?.let { recycleView ->
-            _adapter = contextConfig.createAdapter()
-            contextConfig.createLayoutManager()?.apply {
-                recycleView.layoutManager = this
+        val rv = contextConfig.getRecyclerView()
+        if (rv != null) {
+            contextConfig.getRecyclerView()?.let { recycleView ->
+                _adapter = contextConfig.createAdapter()
+                contextConfig.createLayoutManager()?.apply {
+                    recycleView.layoutManager = this
+                }
+                recycleView.adapter = _adapter
+                contextConfig.bindHolder(_adapter)
+                onRefresh()
             }
-            recycleView.adapter = _adapter
-            contextConfig.bindHolder(_adapter)
+        } else {
+            java.lang.Exception("getRecyclerView == null").printStackTrace()
         }
-
-        onRefresh()
     }
 
     override fun setRefreshEnable(enable: Boolean) {
