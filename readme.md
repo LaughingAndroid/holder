@@ -2,6 +2,8 @@
 ## 简介
 * 使用搭积木的方式创建页面
 
+![列表](http://pyol6csk7.bkt.clouddn.com/test.jpg?imageView2/1/w/360/h/650)
+
 ## 配置
 
 ```
@@ -10,7 +12,7 @@
     }
     
     dependencies{
-        implementation 'com.cf:holder:0.0.15'
+        implementation 'com.cf:holder:0.0.16'
         kapt 'com.cf:holder-complier:0.0.2'
     }
 ```
@@ -51,7 +53,7 @@ class TestListDL : BaseDataLoader() {
 
 ### BaseHolder
 - 这个类把data-ui做一个键值对绑定，比如String-TestListHolder
-- TestListHolder需要继承TestListHolder，标记@Holder注解，编辑器会自动生成TestListHolderBuilder
+- TestListHolder需要继承BaseHolder，标记@Holder注解，编辑器会自动生成TestListHolderBuilder
 - 然后在bindHolder中把adapter和holder builder绑定在一起
 
     ```
