@@ -3,9 +3,9 @@
 //publish {
 //    userOrg = 'mchwind'
 //    groupId = 'com.cf'
-//    artifactId = 'holder-complier'
+//    artifactId = 'holder-compiler'
 //    publishVersion = '0.0.2'
-//    desc = 'A holder complier.'
+//    desc = 'A holder compiler.'
 //    website = 'https://gitee.com/laughing1221/holder'
 //    repoName = 'cf'
 //}

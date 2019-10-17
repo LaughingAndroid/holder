@@ -7,5 +7,5 @@
 #./gradlew :compiler:bintrayUpload
 
 # router
-module=holder-complier
+module=holder-compiler
 ./gradlew  bintrayUpload -PbintrayUser=mchwind -PbintrayKey=$1 -PdryRun=false -x javadoc

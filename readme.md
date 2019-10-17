@@ -1,6 +1,6 @@
 # Holder
 ## 简介
-* 使用搭积木的方式创建页面
+* 让页面搭建和搭积木一样简单有趣
 
 ![列表](http://pyol6csk7.bkt.clouddn.com/test.jpg?imageView2/1/w/360/h/650)
 
@@ -12,8 +12,8 @@
     }
     
     dependencies{
-        implementation 'com.cf:holder:0.0.16'
-        kapt 'com.cf:holder-complier:0.0.2'
+        implementation 'com.cf:holder:0.0.17'
+        kapt 'com.cf:holder-compiler:0.0.2'
     }
 ```
 
