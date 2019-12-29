@@ -51,6 +51,6 @@ dependencies {
     implementation deps.lifecycle.java8
     implementation deps.svga_play
     implementation 'com.cf:holder:0.0.17'
-    implementation 'com.cf:android-utils:0.0.5'
-    kapt 'com.cf:holder-compiler:0.0.2'
+    implementation 'com.cf:android-utils:0.0.8'
+    kapt 'com.cf:holder-complier:0.0.2'
 }

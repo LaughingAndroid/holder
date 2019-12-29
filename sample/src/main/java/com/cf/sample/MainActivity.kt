@@ -13,12 +13,12 @@ import com.cf.holder.divider.DefaultItemDecoration
 import com.cf.holder.list.BaseDataLoader
 import com.cf.holder.list.ListActivity
 import com.cf.holder.list.toListener
-import com.cf.utils.rx.ILoadingProgress
+import com.cf.utils.rx.LoadingProgress
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_banner.view.*
 import kotlinx.android.synthetic.main.item_test.view.*
 
-class MainActivity : ListActivity<MainLoadData>(), TestHolder.TestHolderCallback, ILoadingProgress {
+class MainActivity : ListActivity<MainLoadData>(), TestHolder.TestHolderCallback, LoadingProgress {
     override fun hideLoading() {
         refreshLayout.isRefreshing = false
     }
@@ -55,7 +55,7 @@ class MainActivity : ListActivity<MainLoadData>(), TestHolder.TestHolderCallback
 }
 
 class MainLoadData : BaseDataLoader() {
-    var loading: ILoadingProgress? = null
+    var loading: LoadingProgress? = null
     override fun loadData(result: (List<*>) -> Unit, exception: (Exception) -> Unit) {
         loading?.showLoading()
         mutableListOf<Any>().apply {
@@ -95,7 +95,7 @@ class TestHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R
 
 @Holder
 class BannerHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R.layout.item_banner)
-    : BaseListHolder<BannerHolder.BannerData, MainLoadData>(parent, layoutId), ILoadingProgress {
+    : BaseListHolder<BannerHolder.BannerData, MainLoadData>(parent, layoutId), LoadingProgress {
     override fun hideLoading() {
         itemView.progressBar.visibility = View.GONE
     }
