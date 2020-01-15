@@ -1,9 +1,11 @@
 package com.cf.sample
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import click
 import com.cf.annotation.Holder
 import com.cf.holder.BaseHolder
 import com.cf.holder.BaseListHolder
@@ -36,6 +38,7 @@ class MainActivity : ListActivity<MainLoadData>(), TestHolder.TestHolderCallback
             addHolder(TestHolderBuilder())
             addHolder(MainFooterBuilder())
             addHolder(BannerHolderBuilder())
+            addHolder(ItemActivityBuilder())
         }
         getRecyclerView()?.addItemDecoration(DefaultItemDecoration.create())
     }
@@ -43,6 +46,8 @@ class MainActivity : ListActivity<MainLoadData>(), TestHolder.TestHolderCallback
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         listManager.setRefreshListener(refreshLayout.toListener())
+        NetworkTest.registerNetworkCallback(this)
+        setLoadMoreEnable(false)
     }
 
     override fun getListDataLoader(): MainLoadData {
@@ -52,6 +57,7 @@ class MainActivity : ListActivity<MainLoadData>(), TestHolder.TestHolderCallback
     override fun callback(h: TestHolder): Boolean {
         return h.adapterPosition % 2 == 0
     }
+
 }
 
 class MainLoadData : BaseDataLoader() {
@@ -59,12 +65,7 @@ class MainLoadData : BaseDataLoader() {
     override fun loadData(result: (List<*>) -> Unit, exception: (Exception) -> Unit) {
         loading?.showLoading()
         mutableListOf<Any>().apply {
-            for (i in 0..10) {
-                add("index ${dataManager.data?.size ?: i}")
-                if (i == 5) {
-                    add(BannerHolder.BannerData())
-                }
-            }
+            add(RxTestActivity::class.java)
             android.os.Handler().postDelayed({
                 result(this)
                 loading?.hideLoading()
@@ -125,6 +126,22 @@ class ItemBannerHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: I
     override fun convert(data: String) {
     }
 }
+
+@Holder
+class ItemActivity @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R.layout.item_test)
+    : BaseHolder<Class<*>>(parent, layoutId) {
+    override fun convert(data: Class<*>) {
+        itemView.apply {
+            tv.text = data.toString()
+        }
+        itemView.click {
+            adapterContext?.activity()?.apply {
+                startActivity(Intent(this, data))
+            }
+        }
+    }
+}
+
 
 /**
  * 自定义footer
