@@ -183,7 +183,7 @@ interface AdapterContext {
      */
     fun target(): Any
 
-    fun <T> as2(): T?
+    fun <T> targetAs2(): T?
 
     fun adapter(): QuickAdapter
 
@@ -193,7 +193,7 @@ interface AdapterContext {
 abstract class BaseAdapterContext : AdapterContext {
     private lateinit var _adapter: QuickAdapter
 
-    override fun <T> as2(): T? {
+    override fun <T> targetAs2(): T? {
         return target() as? T
     }
 

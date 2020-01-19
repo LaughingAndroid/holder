@@ -45,7 +45,7 @@ class ItemOpt @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R.la
                     Observable.concat<Any>(list).subscribe {
                         val msg = "subscribe test concat $it"
                         Logs.d(msg)
-                        adapterContext?.as2<IAddLog>()?.addLog(msg)
+                        adapterContext?.targetAs2<IAddLog>()?.addLog(msg)
                     }
                 }
                 else -> {
@@ -62,7 +62,7 @@ class ItemOpt @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R.la
                 delayJob((10 - i) * 100L) {
                     val msg = "task test rx concat $i"
                     Logs.d(msg)
-                    adapterContext?.as2<IAddLog>()?.addLog(msg)
+                    adapterContext?.targetAs2<IAddLog>()?.addLog(msg)
                     it.onNext(i)
                     it.onComplete()
                 }
@@ -90,6 +90,7 @@ class RxDl : BaseDataLoader() {
     override fun loadData(result: (List<*>) -> Unit, exception: (Exception) -> Unit) {
         val list = mutableListOf<Any>()
         list.add("concat")
+        list.add("rxDownload")
         delayJob(100) {
             result(list)
         }

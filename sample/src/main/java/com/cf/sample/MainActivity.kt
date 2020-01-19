@@ -82,7 +82,7 @@ class TestHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R
     : BaseHolder<String>(parent, layoutId) {
     @SuppressLint("SetTextI18n")
     override fun convert(data: String) {
-        val c: TestHolderCallback? = adapterContext?.as2()
+        val c: TestHolderCallback? = adapterContext?.targetAs2()
         itemView.tv.text = data + " callback:" + c?.callback(this)
     }
 

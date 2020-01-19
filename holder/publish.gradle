@@ -4,7 +4,7 @@ publish {
     userOrg = 'mchwind'
     groupId = 'com.cf'
     artifactId = 'holder'
-    publishVersion = '0.0.17'
+    publishVersion = '0.0.18'
     desc = 'A holder lib.'
     website = 'https://gitee.com/laughing1221/holder'
     repoName = 'cf'
