@@ -3,6 +3,7 @@ package com.cf.sample
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import click
@@ -58,6 +59,11 @@ class MainActivity : ListActivity<MainLoadData>(), TestHolder.TestHolderCallback
         return h.adapterPosition % 2 == 0
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        Logs.d("$this dispatchTouchEvent ${ev}")
+        return super.dispatchTouchEvent(ev)
+    }
+
 }
 
 class MainLoadData : BaseDataLoader() {
@@ -66,6 +72,7 @@ class MainLoadData : BaseDataLoader() {
         loading?.showLoading()
         mutableListOf<Any>().apply {
             add(RxTestActivity::class.java)
+            add(HandlerTestActivity::class.java)
             android.os.Handler().postDelayed({
                 result(this)
                 loading?.hideLoading()
