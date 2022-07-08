@@ -9,4 +9,4 @@
 
 module=holder
 ./gradlew :${module}:aR
-./gradlew  bintrayUpload -PbintrayUser=mchwind -PbintrayKey=$1 -PdryRun=false -x javadocRelease
+./gradlew  bintrayUpload -PbintrayUser=mchwind -PbintrayKey=e10434f24d57625f6566ab14a4fbe8f01fad9cdc -PdryRun=false -x javadocRelease
