@@ -168,7 +168,7 @@ interface ListConfig<DL : DataLoader> {
      */
     fun bindHolder(adapter: QuickAdapter)
 
-    fun createLayoutManager(): LinearLayoutManager?
+    fun createLayoutManager(): RecyclerView.LayoutManager?
     fun getRecyclerView(): RecyclerView?
     fun createAdapter(): QuickAdapter
     /**

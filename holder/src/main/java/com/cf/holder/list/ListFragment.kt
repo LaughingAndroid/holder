@@ -17,7 +17,7 @@ abstract class ListFragment<DL : DataLoader> : Fragment(), ListConfig<DL> {
 
     fun isListManagerInit(): Boolean = ::listManager.isInitialized
 
-    override fun createLayoutManager(): LinearLayoutManager? {
+    override fun createLayoutManager(): RecyclerView.LayoutManager? {
         return LinearLayoutManager(this.context)
     }
 
