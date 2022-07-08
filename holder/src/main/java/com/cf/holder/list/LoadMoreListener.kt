@@ -12,7 +12,7 @@ abstract class LoadMoreListener : RecyclerView.OnScrollListener() {
     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
         super.onScrollStateChanged(recyclerView, newState)
 
-        val manager = recyclerView.layoutManager as LinearLayoutManager?
+        val manager = recyclerView.layoutManager as RecyclerView.LayoutManager?
 
         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
             //当状态是不滑动的时候
