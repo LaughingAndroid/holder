@@ -2,6 +2,7 @@ package com.cf.holder.list
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
 abstract class LoadMoreListener : RecyclerView.OnScrollListener() {
     /**
@@ -12,17 +13,37 @@ abstract class LoadMoreListener : RecyclerView.OnScrollListener() {
     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
         super.onScrollStateChanged(recyclerView, newState)
 
-        val manager = recyclerView.layoutManager as RecyclerView.LayoutManager?
 
         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
             //当状态是不滑动的时候
+            var itemCount = 0
+            var lastItemPosition = 0
+            var scrollToPositionWithOffset = {}
+            if (recyclerView.layoutManager is LinearLayoutManager) {
+                val manager = recyclerView.layoutManager as LinearLayoutManager
+                lastItemPosition = manager.findLastCompletelyVisibleItemPosition()
+                itemCount = manager.itemCount
+                scrollToPositionWithOffset = {
+                    manager.scrollToPositionWithOffset(itemCount - 1, 1000)
+                }
+            } else if (recyclerView.layoutManager is StaggeredGridLayoutManager) {
+                val manager = recyclerView.layoutManager as StaggeredGridLayoutManager
+                val aa = IntArray(5)
+                manager.findLastCompletelyVisibleItemPositions(aa)
+                var index = 4
+                while (index > 0) {
+                    if (aa[index] > 0) {
+                        lastItemPosition = aa[index]
+                        break
+                    }
+                }
+                itemCount = manager.itemCount
+            }
 
-            val lastItemPosition = manager!!.findLastCompletelyVisibleItemPosition()
-            val itemCount = manager.itemCount
 
             if (lastItemPosition == itemCount - 1 && isSlidingUpward) {
                 onLoadMore()
-                manager?.scrollToPositionWithOffset(itemCount - 1, 1000)
+                scrollToPositionWithOffset()
             }
         }
     }
