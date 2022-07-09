@@ -56,6 +56,8 @@ abstract class BaseHolder<T> : RecyclerView.ViewHolder, DefaultLifecycleObserver
     }
 
 
+    var mLifecycleOwner: LifecycleOwner? = null
+
     var mLifecycle: Lifecycle? = null
         set(value) {
             field = value
@@ -82,6 +84,7 @@ abstract class BaseHolder<T> : RecyclerView.ViewHolder, DefaultLifecycleObserver
             field?.apply {
                 val owner: LifecycleOwner? = (target() as? LifecycleOwner)
                         ?: activity() as? LifecycleOwner
+                mLifecycleOwner = owner
                 mLifecycle = owner?.lifecycle
                 onContextSet()
             }
