@@ -27,7 +27,7 @@ abstract class BaseListHolder<T, DL : DataLoader> : BaseHolder<T>, ListConfig<DL
 
     }
 
-    override fun createLayoutManager(): LinearLayoutManager? {
+    override fun createLayoutManager(): RecyclerView.LayoutManager? {
         return LinearLayoutManager(adapterContext?.activity(), LinearLayoutManager.HORIZONTAL, false)
     }
 

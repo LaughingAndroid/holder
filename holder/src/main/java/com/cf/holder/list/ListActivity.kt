@@ -16,7 +16,7 @@ abstract class ListActivity<DL : DataLoader> : AppCompatActivity(), ListConfig<D
 
     fun isListManagerInit(): Boolean = ::listManager.isInitialized
 
-    override fun createLayoutManager(): LinearLayoutManager? {
+    override fun createLayoutManager(): RecyclerView.LayoutManager? {
         return LinearLayoutManager(this)
     }
 
