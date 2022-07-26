@@ -10,18 +10,17 @@ import java.util.*
 class DefaultItemDecoration {
     companion object {
         @JvmStatic
-        fun createBuilder(): HorizontalDividerItemDecoration.Builder {
+        fun createBuilder(color:Int = 0xFFF4F5F7.toInt()): HorizontalDividerItemDecoration.Builder {
             val mSizeMap = HashMap<String, Int>()
             val marginLeftMap = HashMap<String, Int>()
             val marginRightMap = HashMap<String, Int>()
             return HorizontalDividerItemDecoration.Builder(HolderManager.application)
                     .colorProvider(FlexibleDividerDecoration.ColorProvider { position, parent ->
                         val manager = parent.layoutManager
-                        var color: Int = 0xFFF4F5F7.toInt()
                         if (null != manager) {
                             val view = manager.findViewByPosition(position)
                             if (null != view && getHolder(view) !is BaseHolder<*>) {
-                                color = Color.TRANSPARENT
+                                return@ColorProvider Color.TRANSPARENT
                             }
                         }
                         return@ColorProvider color
@@ -44,8 +43,8 @@ class DefaultItemDecoration {
         }
 
         @JvmStatic
-        fun create(): HorizontalDividerItemDecoration {
-            return createBuilder().build()
+        fun create(color:Int = 0xFFF4F5F7.toInt()): HorizontalDividerItemDecoration {
+            return createBuilder(color).build()
         }
 
         private fun getSize(position: Int, parent: RecyclerView, sizeMap: MutableMap<String, Int>): Int {
