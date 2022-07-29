@@ -96,6 +96,11 @@ open class QuickAdapter : RecyclerView.Adapter<BaseHolder<*>> {
         return mData.size + mFooterCount
     }
 
+    fun getData(): MutableList<*> {
+        return mData
+    }
+
+
     open fun getRealItemCount(): Int {
         return itemCount - mFooterCount
     }
@@ -124,7 +129,10 @@ open class QuickAdapter : RecyclerView.Adapter<BaseHolder<*>> {
 }
 
 @Holder
-open class FooterHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R.layout.item_footer) : BaseHolder<FooterHolder.Data>(parent, layoutId) {
+open class FooterHolder @JvmOverloads constructor(
+    parent: ViewGroup?,
+    layoutId: Int = R.layout.item_footer
+) : BaseHolder<FooterHolder.Data>(parent, layoutId) {
     var height = 0
 
     init {
@@ -177,6 +185,7 @@ open class FooterHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: 
 
 interface AdapterContext {
     fun activity(): Activity?
+
     /**
      * 使用adapter的宿主
      * activity, fragment等
