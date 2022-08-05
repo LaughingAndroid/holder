@@ -53,6 +53,7 @@ open class QuickAdapter : RecyclerView.Adapter<BaseHolder<*>> {
             mData.addAll(data as List<Nothing>)
             clearBadData()
             notifyDataSetChanged()
+            xxx
         }
         mFooterData.isLoading = false
     }
