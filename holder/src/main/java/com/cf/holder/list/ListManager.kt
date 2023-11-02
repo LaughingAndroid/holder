@@ -196,7 +196,7 @@ abstract class BaseDataLoader : DataLoader {
         loadData({
             val data = PageData(dataManager.page, it)
             result(data)
-            dataManager.putCache(data)
+            dataManager.putCache(data.list)
             dataManager.pageAdd()
         }, exception)
     }
