@@ -8,7 +8,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.cf.annotation.Holder
-import com.lau.holder.FooterHolderBuilder
 import com.lau.holder.R
 
 open class QuickAdapter : RecyclerView.Adapter<BaseHolder<*>> {
@@ -35,7 +34,7 @@ open class QuickAdapter : RecyclerView.Adapter<BaseHolder<*>> {
     }
 
     init {
-        addHolder(FooterHolderBuilder())
+//        addHolder(FooterHolderBuilder())
     }
 
     fun addData(data: List<*>?) {
@@ -128,7 +127,7 @@ open class QuickAdapter : RecyclerView.Adapter<BaseHolder<*>> {
     }
 }
 
-@Holder
+@Holder("item_footer")
 open class FooterHolder @JvmOverloads constructor(
     parent: ViewGroup?,
     layoutId: Int = R.layout.item_footer

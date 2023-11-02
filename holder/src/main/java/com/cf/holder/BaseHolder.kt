@@ -65,10 +65,10 @@ abstract class BaseHolder<T> : RecyclerView.ViewHolder, DefaultLifecycleObserver
         }
 
     constructor(parent: ViewGroup? = null, layoutId: Int) : super(
-            createItemView(
-                    parent,
-                    layoutId
-            )
+        createItemView(
+            parent,
+            layoutId
+        )
     )
 
     constructor(view: View) : super(view)
@@ -83,7 +83,7 @@ abstract class BaseHolder<T> : RecyclerView.ViewHolder, DefaultLifecycleObserver
             field = value
             field?.apply {
                 val owner: LifecycleOwner? = (target() as? LifecycleOwner)
-                        ?: activity() as? LifecycleOwner
+                    ?: activity() as? LifecycleOwner
                 mLifecycleOwner = owner
                 mLifecycle = owner?.lifecycle
                 onContextSet()
@@ -169,4 +169,9 @@ fun IHolderBuilder<*>.getItemTypeFromDataClass(): Int {
         e.printStackTrace()
         0
     }
+}
+
+fun String.getLayoutInt(): Int {
+    val packageName = application.packageName
+    return application.resources.getIdentifier(this, "layout", packageName)
 }

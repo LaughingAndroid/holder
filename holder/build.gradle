@@ -8,7 +8,7 @@ group='com.gitee.laughing1221'
 
 kapt {
     arguments {
-        arg("package_name", "com.lau.holder")
+//        arg("package_name", "com.lau.holder")
     }
 }
 

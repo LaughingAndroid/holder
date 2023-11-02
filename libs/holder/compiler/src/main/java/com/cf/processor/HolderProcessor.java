@@ -58,9 +58,9 @@ public class HolderProcessor extends BaseProcessor {
                         .addSuperinterface(ParameterizedTypeName.get(ClassName.get(Constants.HOLDER_PACKAGE, Constants.HOLDER_BUILDER), holderName))
                         .addJavadoc("auto code 2")
                         .build();
-                JavaFile.Builder javaFileBuilder = JavaFile.builder("", builderSpec);
+                JavaFile.Builder javaFileBuilder = JavaFile.builder(getPackageName(), builderSpec);
                 if (hasLayout) {
-                    javaFileBuilder.addStaticImport(ClassName.get(getPackageName() + ".R", "layout"), holderAnnotation.layoutName());
+//                    javaFileBuilder.addStaticImport(ClassName.get(getPackageName() + ".R", "layout"), holderAnnotation.layoutName());
                 }
                 try {
                     javaFileBuilder.build().writeTo(mFiler);
@@ -98,15 +98,17 @@ public class HolderProcessor extends BaseProcessor {
     private MethodSpec createViewHolderMethod(Element roundElement, boolean hasLayout, Holder holderAnnotation, ClassName holderName) {
         String methodName = Constants.METHOD_CREATE_HOLDER;
         TypeMirror returnType = roundElement.asType();
+        ClassName type = ClassName.get(Constants.HOLDER_PACKAGE, Constants.BASE_HOLDER_KT);
 
-        String layoutIdParam = hasLayout ? "," + holderAnnotation.layoutName() : "";
+
+        String layoutIdParam = hasLayout ? "," + ("$T.getLayoutInt(\"" + holderAnnotation.layoutName() + "\")") : "";
         MethodSpec methodSpec = MethodSpec.methodBuilder(methodName)
                 .addJavadoc("Auto code, create ViewHolder.")
                 .returns(TypeName.get(returnType))
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
                 .addParameter(ClassName.bestGuess("android.view.ViewGroup"), Constants.PARAMS_NAME_VIEW_GROUP)
-                .addStatement("return new " + holderName.simpleName() + "(parent" + layoutIdParam + ")")
+                .addStatement("return new " + holderName.simpleName() + "(parent" + layoutIdParam + ")", type)
                 .build();
         return methodSpec;
     }

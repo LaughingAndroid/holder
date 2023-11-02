@@ -12,6 +12,7 @@ import com.cf.holder.BaseHolder
 import com.cf.holder.BaseListHolder
 import com.cf.holder.FooterHolder
 import com.cf.holder.QuickAdapter
+import com.cf.holder.bindHolder
 import com.cf.holder.divider.DefaultItemDecoration
 import com.cf.holder.list.BaseDataLoader
 import com.cf.holder.list.ListActivity
@@ -35,24 +36,18 @@ class MainActivity : ListActivity<MainLoadData>(), TestHolder.TestHolderCallback
     override fun layoutId(): Int = R.layout.activity_main
 
     override fun bindHolder(adapter: QuickAdapter) {
-        adapter.apply {
-            addHolder(TestHolderBuilder())
-            addHolder(MainFooterBuilder())
-            addHolder(BannerHolderBuilder())
-            addHolder(ItemActivityBuilder())
-        }
+        adapter.bindHolder<TestHolder>()
         getRecyclerView()?.addItemDecoration(DefaultItemDecoration.create())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         listManager.setRefreshListener(refreshLayout.toListener())
-        NetworkTest.registerNetworkCallback(this)
         setLoadMoreEnable(false)
     }
 
     override fun getListDataLoader(): MainLoadData {
-        return super.getListDataLoader().apply { loading = this@MainActivity }
+        return super.getListDataLoader()
     }
 
     override fun callback(h: TestHolder): Boolean {
@@ -70,23 +65,24 @@ class MainLoadData : BaseDataLoader() {
     var loading: LoadingProgress? = null
     override fun loadData(result: (List<*>) -> Unit, exception: (Exception) -> Unit) {
         loading?.showLoading()
-        mutableListOf<Any>().apply {
-            add(RxTestActivity::class.java)
-            add(HandlerTestActivity::class.java)
-            android.os.Handler().postDelayed({
-                result(this)
-                loading?.hideLoading()
-            }, 1000)
-        }
+        val list = mutableListOf<Any>()
+        android.os.Handler().postDelayed({
+            list.add("1")
+            list.add("2")
+            list.add("3")
+            list.add("4")
+            result(list)
+            loading?.hideLoading()
+        }, 1000)
     }
 }
 
 /**
  * 列表的item
  */
-@Holder
-class TestHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R.layout.item_test)
-    : BaseHolder<String>(parent, layoutId) {
+@Holder("item_test")
+class TestHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int) :
+    BaseHolder<String>(parent, layoutId) {
     @SuppressLint("SetTextI18n")
     override fun convert(data: String) {
         val c: TestHolderCallback? = adapterContext?.targetAs2()
@@ -102,8 +98,10 @@ class TestHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R
 }
 
 @Holder
-class BannerHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R.layout.item_banner)
-    : BaseListHolder<BannerHolder.BannerData, MainLoadData>(parent, layoutId), LoadingProgress {
+class BannerHolder @JvmOverloads constructor(
+    parent: ViewGroup?,
+    layoutId: Int = R.layout.item_banner
+) : BaseListHolder<BannerHolder.BannerData, MainLoadData>(parent, layoutId), LoadingProgress {
     override fun hideLoading() {
         itemView.progressBar.visibility = View.GONE
     }
@@ -113,7 +111,7 @@ class BannerHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int =
     }
 
     override fun bindHolder(adapter: QuickAdapter) {
-        adapter.addHolder(ItemBannerHolderBuilder())
+        adapter.bindHolder<ItemBannerHolder>()
     }
 
     override fun convert(data: BannerData) {
@@ -121,30 +119,30 @@ class BannerHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int =
     }
 
     override fun getListDataLoader(): MainLoadData {
-        return super.getListDataLoader().apply { loading = this@BannerHolder }
+        return super.getListDataLoader()
     }
 
     data class BannerData(var url: String = "")
 }
 
 @Holder
-class ItemBannerHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R.layout.item_sub_banner)
-    : BaseHolder<String>(parent, layoutId) {
+class ItemBannerHolder @JvmOverloads constructor(
+    parent: ViewGroup?,
+    layoutId: Int = R.layout.item_sub_banner
+) : BaseHolder<String>(parent, layoutId) {
     override fun convert(data: String) {
     }
 }
 
 @Holder
-class ItemActivity @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R.layout.item_test)
-    : BaseHolder<Class<*>>(parent, layoutId) {
+class ItemActivity @JvmOverloads constructor(
+    parent: ViewGroup?,
+    layoutId: Int = R.layout.item_test
+) : BaseHolder<Class<*>>(parent, layoutId) {
     override fun convert(data: Class<*>) {
-        itemView.apply {
-            tv.text = data.toString()
-        }
+        itemView.tv.text = data.toString()
         itemView.click {
-            adapterContext?.activity()?.apply {
-                startActivity(Intent(this, data))
-            }
+            adapterContext?.activity()?.startActivity(Intent(adapterContext?.activity()!!, data))
         }
     }
 }
@@ -154,5 +152,7 @@ class ItemActivity @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int =
  * 自定义footer
  */
 @Holder
-class MainFooter @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int = R.layout.item_main_footer)
-    : FooterHolder(parent, layoutId)
+class MainFooter @JvmOverloads constructor(
+    parent: ViewGroup?,
+    layoutId: Int = R.layout.item_main_footer
+) : FooterHolder(parent, layoutId)

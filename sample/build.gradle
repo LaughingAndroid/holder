@@ -5,7 +5,6 @@ apply plugin: 'kotlin-android-extensions'
 
 kapt {
     arguments {
-        arg("package_name", "com.cf.sample")
     }
 }
 android {
@@ -50,9 +49,10 @@ dependencies {
     implementation deps.lifecycle.extensions
     implementation deps.lifecycle.java8
     implementation deps.svga_play
-    implementation 'com.cf:holder:0.0.18'
     implementation 'com.cf:android-utils:0.0.8'
-    kapt 'com.cf:holder-complier:0.0.2'
+    kapt project(':holder-compiler')
+    implementation project(":holder")
+
 
     implementation "com.github.ssseasonnn.RxDownload:rxdownload4:1.0.9"
     implementation "com.github.ssseasonnn.RxDownload:rxdownload4-manager:1.0.9"

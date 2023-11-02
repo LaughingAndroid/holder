@@ -20,21 +20,4 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.cf.sample.TestTouchEventViewGroup
-        android:layout_width="500dp"
-        android:background="#ffee33"
-        android:layout_height="500dp">
-
-        <com.cf.sample.TestTouchEventViewGroup
-            android:layout_width="300dp"
-            android:background="#11aa11"
-            android:layout_height="300dp">
-
-            <com.cf.sample.TestTouchEventView
-                android:layout_width="100dp"
-                android:background="#112233"
-                android:layout_height="100dp" />
-        </com.cf.sample.TestTouchEventViewGroup>
-
-    </com.cf.sample.TestTouchEventViewGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>
