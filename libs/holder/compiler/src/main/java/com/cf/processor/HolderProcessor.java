@@ -58,7 +58,7 @@ public class HolderProcessor extends BaseProcessor {
                         .addSuperinterface(ParameterizedTypeName.get(ClassName.get(Constants.HOLDER_PACKAGE, Constants.HOLDER_BUILDER), holderName))
                         .addJavadoc("auto code 2")
                         .build();
-                JavaFile.Builder javaFileBuilder = JavaFile.builder(getPackageName(), builderSpec);
+                JavaFile.Builder javaFileBuilder = JavaFile.builder(builderSpec);
                 if (hasLayout) {
                     javaFileBuilder.addStaticImport(ClassName.get(getPackageName() + ".R", "layout"), holderAnnotation.layoutName());
                 }
