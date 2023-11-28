@@ -4,7 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import java.lang.reflect.ParameterizedType
 
-abstract class BaseBindingHolder<T, VB : View>(parent: ViewGroup? = null, layoutId: Int) :
+abstract class BaseBindingHolder<T, VB>(parent: ViewGroup? = null, layoutId: Int) :
     BaseHolder<T>(parent, layoutId) {
     val binding: VB by lazy(mode = LazyThreadSafetyMode.NONE) {
         val type = javaClass.genericSuperclass
