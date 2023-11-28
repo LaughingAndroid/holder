@@ -175,3 +175,29 @@ fun String.getLayoutInt(): Int {
     val packageName = application.packageName
     return application.resources.getIdentifier(this, "layout", packageName)
 }
+
+
+fun IHolderBuilder<*>.createItemView(): View {
+    val holderClass = javaClass.getTypeClass(0)
+    val bindingClass = holderClass?.getTypeClass(1)
+    return bindingClass?.createBindingView() ?: View(application)
+}
+
+fun Class<*>.createBindingView(): View? {
+    val createMethod = getMethod(
+        "inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.java
+    )
+    val inflater = LayoutInflater.from(HolderManager.application)
+    val binding = createMethod.invoke(null, inflater, null, false)
+
+    val rootMethod = getMethod("getRoot")
+
+    return rootMethod.invoke(binding) as? View
+}
+
+
+fun Class<*>.getTypeClass(index: Int): Class<*>? {
+    val type = javaClass.genericSuperclass as? ParameterizedType
+    val holderClass = type?.actualTypeArguments?.get(0)
+    return holderClass as? Class<*>
+}

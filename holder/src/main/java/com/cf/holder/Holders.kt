@@ -9,4 +9,3 @@ inline fun <reified T> getHolderBuilder(): IHolderBuilder<*> {
 inline fun <reified T> QuickAdapter.bindHolder(key: Int? = null) {
     addHolder(getHolderBuilder<T>(), key)
 }
-

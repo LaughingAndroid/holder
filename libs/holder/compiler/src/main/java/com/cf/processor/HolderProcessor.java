@@ -50,10 +50,15 @@ public class HolderProcessor extends BaseProcessor {
                 String builderName = holderName.simpleName() + Constants.CLASS_NAME_SUFFIX;
                 Holder holderAnnotation = roundElement.getAnnotation(Holder.class);
                 boolean hasLayout = !"".equals(holderAnnotation.layoutName());
+                boolean forBinding = holderAnnotation.binding();
 
-                TypeSpec builderSpec = TypeSpec.classBuilder(builderName)
-                        .addMethod(createViewHolderMethod(roundElement, hasLayout, holderAnnotation, holderName))
-                        .addMethod(itemTypeMethod(holderAnnotation))
+                TypeSpec.Builder builder = TypeSpec.classBuilder(builderName);
+                if (forBinding) {
+                    builder.addMethod(createViewHolderMethodForBinding(roundElement, hasLayout, holderAnnotation, holderName));
+                } else {
+                    builder.addMethod(createViewHolderMethod(roundElement, hasLayout, holderAnnotation, holderName));
+                }
+                TypeSpec builderSpec = builder.addMethod(itemTypeMethod(holderAnnotation))
                         .addModifiers(Modifier.PUBLIC)
                         .addSuperinterface(ParameterizedTypeName.get(ClassName.get(Constants.HOLDER_PACKAGE, Constants.HOLDER_BUILDER), holderName))
                         .addJavadoc("auto code 2")
@@ -109,6 +114,23 @@ public class HolderProcessor extends BaseProcessor {
                 .addAnnotation(Override.class)
                 .addParameter(ClassName.bestGuess("android.view.ViewGroup"), Constants.PARAMS_NAME_VIEW_GROUP)
                 .addStatement("return new " + holderName.simpleName() + "(parent" + layoutIdParam + ")", type)
+                .build();
+        return methodSpec;
+    }
+
+    private MethodSpec createViewHolderMethodForBinding(Element roundElement, boolean hasLayout, Holder holderAnnotation, ClassName holderName) {
+        String methodName = Constants.METHOD_CREATE_HOLDER;
+        TypeMirror returnType = roundElement.asType();
+        ClassName type = ClassName.get(Constants.HOLDER_PACKAGE, Constants.BASE_HOLDER_KT);
+
+
+        MethodSpec methodSpec = MethodSpec.methodBuilder(methodName)
+                .addJavadoc("Auto code, create ViewHolder.")
+                .returns(TypeName.get(returnType))
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override.class)
+                .addParameter(ClassName.bestGuess("android.view.ViewGroup"), "parent")
+                .addStatement("return new " + holderName.simpleName() + "($T.createItemView(this))", type)
                 .build();
         return methodSpec;
     }

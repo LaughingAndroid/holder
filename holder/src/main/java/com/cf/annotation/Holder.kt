@@ -9,7 +9,7 @@ package com.cf.annotation
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
-annotation class Holder(val layoutName: String = "", val itemType: Int = -1)
+annotation class Holder(val layoutName: String = "", val itemType: Int = -1,val binding:Boolean = false)
 
 
 

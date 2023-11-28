@@ -97,11 +97,10 @@ class TestHolder @JvmOverloads constructor(parent: ViewGroup?, layoutId: Int) :
     }
 }
 
-@Holder
-class BannerHolder @JvmOverloads constructor(
-    parent: ViewGroup?,
-    layoutId: Int = R.layout.item_banner
-) : BaseListHolder<BannerHolder.BannerData, MainLoadData>(parent, layoutId), LoadingProgress {
+@Holder(binding = true)
+class BannerHolder(
+    parent: View
+) : BaseListHolder<BannerHolder.BannerData, MainLoadData>(parent), LoadingProgress {
     override fun hideLoading() {
         itemView.progressBar.visibility = View.GONE
     }
