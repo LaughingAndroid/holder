@@ -82,7 +82,16 @@ open class QuickAdapter : RecyclerView.Adapter<BaseHolder<*>> {
         if (mHolderBuilderMap.containsKey(viewType)) {
             var holderClass = mHolderBuilderMap[viewType]
             holderClass?.let {
-                return holderClass.createVH(parent).also { holder ->
+
+                val h = holderClass.createVH(parent)
+                val itemView = h.createViewBinding()?.rootView()
+                val realHolder = if (itemView != null) {
+                    holderClass.createVH(itemView as ViewGroup)
+                } else {
+                    h
+                }
+
+                return realHolder.also { holder ->
                     holder.adapterContext = adapterContext
                 }
             }
