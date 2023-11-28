@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import click
 import com.cf.annotation.Holder
+import com.cf.holder.BaseBindingHolder
 import com.cf.holder.BaseHolder
 import com.cf.holder.BaseListHolder
 import com.cf.holder.FooterHolder
@@ -17,6 +18,7 @@ import com.cf.holder.divider.DefaultItemDecoration
 import com.cf.holder.list.BaseDataLoader
 import com.cf.holder.list.ListActivity
 import com.cf.holder.list.toListener
+import com.cf.sample.databinding.ItemTestBinding
 import com.cf.utils.rx.LoadingProgress
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_banner.view.*
@@ -37,6 +39,7 @@ class MainActivity : ListActivity<MainLoadData>(), TestHolder.TestHolderCallback
 
     override fun bindHolder(adapter: QuickAdapter) {
         adapter.bindHolder<TestHolder>()
+        adapter.bindHolder<TestBindingHolder>()
         getRecyclerView()?.addItemDecoration(DefaultItemDecoration.create())
     }
 
@@ -67,15 +70,23 @@ class MainLoadData : BaseDataLoader() {
         loading?.showLoading()
         val list = mutableListOf<Any>()
         android.os.Handler().postDelayed({
-            list.add("1")
-            list.add("2")
-            list.add("3")
-            list.add("4")
+            list.add(TestBindingData())
             result(list)
             loading?.hideLoading()
         }, 1000)
     }
 }
+
+@Holder(binding = true)
+class TestBindingHolder(itemView: View) :
+    BaseBindingHolder<TestBindingData, ItemTestBinding>(itemView) {
+    override fun convert(data: TestBindingData) {
+        binding.tv.text = data.toString()
+    }
+}
+
+@Holder(viewBinding = "TestBindingData")
+class TestBindingData
 
 /**
  * 列表的item

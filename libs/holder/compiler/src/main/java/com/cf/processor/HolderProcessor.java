@@ -130,7 +130,7 @@ public class HolderProcessor extends BaseProcessor {
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
                 .addParameter(ClassName.bestGuess("android.view.ViewGroup"), "parent")
-                .addStatement("return new " + holderName.simpleName() + "($T.createItemView(this))", type)
+                .addStatement("return new " + holderName.simpleName() + "($T.createItemView(this,parent))", type)
                 .build();
         return methodSpec;
     }

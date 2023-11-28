@@ -177,18 +177,18 @@ fun String.getLayoutInt(): Int {
 }
 
 
-fun IHolderBuilder<*>.createItemView(): View {
-    val holderClass = javaClass.getTypeClass(0)
+fun IHolderBuilder<*>.createItemView(parent: ViewGroup?): View {
+     val holderClass = javaClass.getTypeClass(0)
     val bindingClass = holderClass?.getTypeClass(1)
-    return bindingClass?.createBindingView() ?: View(application)
+    return bindingClass?.createBindingView(parent) ?: View(application)
 }
 
-fun Class<*>.createBindingView(): View? {
+fun Class<*>.createBindingView(parent: ViewGroup?): View? {
     val createMethod = getMethod(
         "inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.java
     )
     val inflater = LayoutInflater.from(HolderManager.application)
-    val binding = createMethod.invoke(null, inflater, null, false)
+    val binding = createMethod.invoke(null, inflater, parent, false)
 
     val rootMethod = getMethod("getRoot")
 
@@ -197,7 +197,8 @@ fun Class<*>.createBindingView(): View? {
 
 
 fun Class<*>.getTypeClass(index: Int): Class<*>? {
-    val type = javaClass.genericSuperclass as? ParameterizedType
-    val holderClass = type?.actualTypeArguments?.get(0)
+    val type = (genericSuperclass as? ParameterizedType)
+        ?: (genericInterfaces[0] as? ParameterizedType)
+    val holderClass = type?.actualTypeArguments?.get(index)
     return holderClass as? Class<*>
 }
