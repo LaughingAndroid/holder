@@ -178,7 +178,7 @@ fun String.getLayoutInt(): Int {
 
 
 fun IHolderBuilder<*>.createItemView(parent: ViewGroup?): View {
-     val holderClass = javaClass.getTypeClass(0)
+    val holderClass = javaClass.getTypeClass(0)
     val bindingClass = holderClass?.getTypeClass(1)
     return bindingClass?.createBindingView(parent) ?: View(application)
 }
@@ -192,7 +192,9 @@ fun Class<*>.createBindingView(parent: ViewGroup?): View? {
 
     val rootMethod = getMethod("getRoot")
 
-    return rootMethod.invoke(binding) as? View
+    val view = rootMethod.invoke(binding) as? View
+    view?.setTag(R.id.holder_bindng, binding)
+    return view
 }
 
 

@@ -12,8 +12,7 @@ package com.cf.annotation
 annotation class Holder(
     val layoutName: String = "",
     val itemType: Int = -1,
-    val binding: Boolean = false,
-    val viewBinding: String = ""
+    val binding: Boolean = false
 )
 
 

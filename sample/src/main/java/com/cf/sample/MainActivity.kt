@@ -85,7 +85,6 @@ class TestBindingHolder(itemView: View) :
     }
 }
 
-@Holder(viewBinding = "TestBindingData")
 class TestBindingData
 
 /**

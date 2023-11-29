@@ -60,11 +60,11 @@ dependencies {
     implementation deps.lifecycle.java8
     implementation deps.svga_play
     implementation 'com.cf:android-utils:0.0.8'
-    kapt project(':holder-compiler')
-    implementation project(":holder")
-//
-//    kapt('com.gitee.laughing1221.holder:holder-compiler:0.0.0.4')
-//    implementation('com.gitee.laughing1221.holder:holder:0.0.0.4')
+//    kapt project(':holder-compiler')
+//    implementation project(":holder")
+
+    kapt('com.gitee.laughing1221.holder:holder-compiler:0.0.0.6')
+    implementation('com.gitee.laughing1221.holder:holder:0.0.0.6')
 
 
     implementation "com.github.ssseasonnn.RxDownload:rxdownload4:1.0.9"

@@ -2,4 +2,5 @@
 <resources>
     <item name="holder" type="id" />
     <item name="recyclerView" type="id" />
+    <item name="holder_bindng" type="id" />
 </resources>
