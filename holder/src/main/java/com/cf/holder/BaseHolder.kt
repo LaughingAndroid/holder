@@ -187,7 +187,7 @@ fun Class<*>.createBindingView(parent: ViewGroup?): View? {
     val createMethod = getMethod(
         "inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.java
     )
-    val inflater = LayoutInflater.from(HolderManager.application)
+    val inflater = LayoutInflater.from(parent?.context ?: HolderManager.application)
     val binding = createMethod.invoke(null, inflater, parent, false)
 
     val rootMethod = getMethod("getRoot")

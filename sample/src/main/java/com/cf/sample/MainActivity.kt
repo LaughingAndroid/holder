@@ -81,7 +81,7 @@ class MainLoadData : BaseDataLoader() {
 class TestBindingHolder(itemView: View) :
     BaseBindingHolder<TestBindingData, ItemTestBinding>(itemView) {
     override fun convert(data: TestBindingData) {
-        binding.tv.text = data.toString()
+        binding.data = data
     }
 }
 
