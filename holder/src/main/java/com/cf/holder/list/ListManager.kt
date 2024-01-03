@@ -62,7 +62,7 @@ open class BaseListManager<Loader : DataLoader>(var contextConfig: ListConfig<Lo
         contextConfig.getListDataLoader().load(true, {
             onSuccess(it)
         }, {
-            _adapter.mFooterData.isLoading = false
+            onFailed(it)
         })
     }
 
